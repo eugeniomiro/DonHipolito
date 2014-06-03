@@ -10,13 +10,13 @@
 ##
 $currentDir=pwd
 $mysqlPath='C:\Archivos de programa\MySQL\MySQL Server 5.1'
-$targetDir='D:\Open\USS'
+$targetDir='D:\OpenOrange\Marketing'
 $user='openorange'
 $password='Uss9954orange8'
 $hostip='192.168.1.219'
 $port='3306'
-$dbname='openuss'
-$compressor='C:\Program Files\WinRAR\rar.exe'
+$dbname='marketing'
+$compressor='C:\Program Files (x86)\7-Zip\7z.exe'
 $numDays=2
 $pastLimit=$(Get-Date).AddDays(-$numDays)
 
