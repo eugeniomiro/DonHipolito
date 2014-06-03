@@ -1,7 +1,7 @@
-﻿function ExecuteOrQuit([string]$cmd, [string]$name) {
-    Invoke-Expression $cmd
+﻿function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
+    Start-Process -filePath $cmd -argumentList $par
     if ($LASTEXITCODE -gt 0) {
-        echo 'errorcode ' + $LASTEXITCODE + 'ejecutando ' + $name
+        echo [string]::Format('errorcode {0} ejecutando {1}', $LASTEXITCODE, $name)
         exit
     }
 }
@@ -16,7 +16,7 @@ $password='Uss9954orange8'
 $hostip='192.168.1.219'
 $port='3306'
 $dbname='marketing'
-$compressor='C:\Program Files (x86)\7-Zip\7z.exe'
+$compressor='C:\Program File\7-Zip\7z.exe'
 $numDays=2
 $pastLimit=$(Get-Date).AddDays(-$numDays)
 
@@ -30,28 +30,29 @@ $eventLogFile=[string]::('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyy
 ##
 ##  comandos
 ##
+
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
-$dumpDbCmd=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} --ignore-table="{5}.Attach" --ignore-table="{5}.EventLog" ', 
-                            $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $targetFile)
-$dumpAttach=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} Attach', 
-                            $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $attachFile)
-$dumpEventLog=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} EventLog', 
-                            $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $eventLogFile)
+$dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
+                            $user, $password, $hostip, $port, $dbname, $targetDir, $targetFile)
+$dumpAttach=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} Attach', 
+                            $user, $password, $hostip, $port, $dbname, $targetDir, $attachFile)
+$dumpEventLog=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} EventLog', 
+                            $user, $password, $hostip, $port, $dbname, $targetDir, $eventLogFile)
 
 ##
 ##  Ejecución
 ##
-ExecuteOrQuit $dumpDbCmd, 'dump db'
-ExecuteOrQuit $dumpAttach, 'dump attach'
-ExecuteOrQuit $dumpEventLog, 'dump eventlog'
+ExecuteOrQuit -cmd $mysqldump -par $dumpDbCmd -name 'dump db'
+ExecuteOrQuit -cmd $mysqldump -par $dumpAttach -name 'dump attach'
+ExecuteOrQuit -cmd $mysqldump -par $dumpEventLog -name 'dump eventlog'
 
 echo 'comprimiendo base...'
 
 cd $targetDir
 
-ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $targetFile)), 'zip ' + $targetFile
-ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $attachFile)), 'zip ' + $attachFile
-ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $eventLogFile)), 'zip ' + $eventLogFile
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $targetFile)), 'zip ' + $targetFile -name 'compressing target'
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $attachFile)), 'zip ' + $attachFile -name 'compressing attach'
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $eventLogFile)), 'zip ' + $eventLogFile -name 'compressing eventlog'
 
 cd $currentDir
 
