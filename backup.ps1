@@ -1,4 +1,4 @@
-﻿function ExecuteOrQuit($cmd, $name) {
+﻿function ExecuteOrQuit([string]$cmd, [string]$name) {
     Invoke-Expression $cmd
     if ($LASTEXITCODE -gt 0) {
         echo 'errorcode ' + $LASTEXITCODE + 'ejecutando ' + $name
@@ -31,11 +31,11 @@ $eventLogFile=[string]::('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyy
 ##  comandos
 ##
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
-$dumpDbCmd=[string]::Format('{0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} --ignore-table="{5}.Attach" --ignore-table="{5}.EventLog" ', 
+$dumpDbCmd=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} --ignore-table="{5}.Attach" --ignore-table="{5}.EventLog" ', 
                             $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $targetFile)
-$dumpAttach=[string]::Format('{0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} Attach', 
+$dumpAttach=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} Attach', 
                             $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $attachFile)
-$dumpEventLog=[string]::Format('{0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} EventLog', 
+$dumpEventLog=[string]::Format('& {0} -u{1} -p{2} -h{3} --port {4} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{6}\{7}" {5} EventLog', 
                             $mysqldump, $user, $password, $hostip, $port, $dbname, $targetDir, $eventLogFile)
 
 ##
@@ -49,11 +49,11 @@ echo 'comprimiendo base...'
 
 cd $targetDir
 
-ExecuteOrQuit $([string]::Format('"{0}" a {1}.zip {1}', $compressor, $targetFile)), 'zip ' + $targetFile
-ExecuteOrQuit $([string]::Format('"{0}" a {1}.zip {1}', $compressor, $attachFile)), 'zip ' + $attachFile
-ExecuteOrQuit $([string]::Format('"{0}" a {1}.zip {1}', $compressor, $eventLogFile)), 'zip ' + $eventLogFile
+ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $targetFile)), 'zip ' + $targetFile
+ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $attachFile)), 'zip ' + $attachFile
+ExecuteOrQuit $([string]::Format('& "{0}" a {1}.zip {1}', $compressor, $eventLogFile)), 'zip ' + $eventLogFile
 
 cd $currentDir
 
-echo 'borrando archivos creado hace más de ' + $numDays + ' días'
+echo $([string]::Format('borrando archivos en "{1}" creados hace más de {0} días', $numDays, $targetDir))
 Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force
