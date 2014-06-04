@@ -2,7 +2,7 @@
     $status = $(Start-Process -filePath $cmd -argumentList $par -PassThru -Wait)
     if ($status.ExitCode -gt 0) {
         echo $([string]::Format('errorcode {0} ejecutando ''{1}'' cmd (''{2}'' {3}) ', 
-            $status.ExitCode, $name, $cmd, [String]::Join(' ', $par)))
+                                        $status.ExitCode, $name, $cmd, [String]::Join(' ', $par)))
         exit
     }
 }
@@ -26,7 +26,7 @@ $pastLimit=$(Get-Date).AddDays(-$numDays)
 ##
 $targetFile=[string]::Format('{0}-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
-$eventLogFile=[string]::('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
+$eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 
 ##
 ##  comandos
