@@ -16,7 +16,7 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
 ##
 ##  valores de configuracion
 ##
-$currentDir=pwd
+$dbname='marketing'
 $mysqlPath='C:\Archivos de programa\MySQL\MySQL Server 5.1'
 $targetDir='D:\OpenOrange\Marketing'
 $user='openorange'
@@ -25,12 +25,10 @@ $hostip='192.168.1.219'
 $port='3306'
 $compressor='C:\Program Files (x86)\7-Zip\7z.exe'
 $numDays=2
-$pastLimit=$(Get-Date).AddDays(-$numDays)
 
 ##
 ##  nombres de archivo
 ##
-$dbname='marketing'
 $logFileName=[string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetZip =[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-DB-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
@@ -40,6 +38,9 @@ $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -form
 ##
 ##  comandos
 ##
+
+$currentDir=pwd
+$pastLimit=$(Get-Date).AddDays(-$numDays)
 
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
 $dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
