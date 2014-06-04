@@ -1,10 +1,7 @@
-﻿$dbname='marketing'
-$logFileName=[string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
-
-Function LogWrite([string]$logstring)
+﻿Function LogWrite([string]$logstring)
 {
     echo $logstring
-    Add-content $logFileName -value $([string]::Format("{0}: {1}", $(Get-Date -format yyyyMMdd-HHmm), $logstring))
+    Add-content $logFileName -value $([string]::Format("{0}: {1}", $(Get-Date -format yyyy/MM/dd-HH:mm:ss), $logstring))
 }
 
 function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
@@ -33,6 +30,8 @@ $pastLimit=$(Get-Date).AddDays(-$numDays)
 ##
 ##  nombres de archivo
 ##
+$dbname='marketing'
+$logFileName=[string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetZip =[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-DB-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
