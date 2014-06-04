@@ -1,7 +1,8 @@
 ﻿function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
     $status = $(Start-Process -filePath $cmd -argumentList $par -PassThru -Wait)
     if ($status.ExitCode -gt 0) {
-        echo [string]::Format('errorcode {0} ejecutando {1}', $status.ExitCode, $name)
+        echo $([string]::Format('errorcode {0} ejecutando ''{1}'' cmd (''{2}'' {3}) ', 
+            $status.ExitCode, $name, $cmd, [String]::Join(' ', $par)))
         exit
     }
 }
