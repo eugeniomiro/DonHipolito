@@ -17,7 +17,7 @@ $password='Uss9954orange8'
 $hostip='192.168.1.219'
 $port='3306'
 $dbname='marketing'
-$compressor='C:\Program File (x86)\7-Zip\7z.exe'
+$compressor='C:\Program Files (x86)\7-Zip\7z.exe'
 $numDays=2
 $pastLimit=$(Get-Date).AddDays(-$numDays)
 
