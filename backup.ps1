@@ -17,7 +17,7 @@ $password='Uss9954orange8'
 $hostip='192.168.1.219'
 $port='3306'
 $dbname='marketing'
-$compressor='C:\Program File (x86)\7-Zip\7z.exe'
+$compressor='C:\Program Files (x86)\7-Zip\7z.exe'
 $numDays=2
 $pastLimit=$(Get-Date).AddDays(-$numDays)
 
@@ -58,4 +58,7 @@ ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $e
 cd $currentDir
 
 echo $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
-Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force
+Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose
+
+echo 'borrando archivos *.sql'
+Remove-Item -Path *.sql -Verbose
