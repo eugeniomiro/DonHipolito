@@ -24,6 +24,7 @@ $pastLimit=$(Get-Date).AddDays(-$numDays)
 ##
 ##  nombres de archivo
 ##
+$targetZip =[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
@@ -51,9 +52,9 @@ echo 'comprimiendo base...'
 
 cd $targetDir
 
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $targetFile)) -name $targetFile 
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $attachFile)) -name $attachFile 
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $eventLogFile)) -name $eventLogFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $targetFile)) -name $targetFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $attachFile)) -name $attachFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $eventLogFile)) -name $eventLogFile 
 
 cd $currentDir
 
