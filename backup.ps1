@@ -50,11 +50,11 @@ echo 'comprimiendo base...'
 
 cd $targetDir
 
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $targetFile)), 'zip ' + $targetFile -name 'compressing target'
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $attachFile)), 'zip ' + $attachFile -name 'compressing attach'
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('& "{0}" a {1}.zip {1}', $eventLogFile)), 'zip ' + $eventLogFile -name 'compressing eventlog'
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $targetFile)) -name $targetFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $attachFile)) -name $attachFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0}.zip {0}', $eventLogFile)) -name $eventLogFile 
 
 cd $currentDir
 
-echo $([string]::Format('borrando archivos en "{1}" creados hace más de {0} días', $numDays, $targetDir))
+echo $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
 Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force
