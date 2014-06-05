@@ -5,7 +5,7 @@
     [String]$dbname='marketing',
     [String]$mysqlPath='C:\Archivos de programa\MySQL\MySQL Server 5.1',
     [String]$targetDir='D:\OpenOrange\Marketing',
-    [String]$alternateDir=$targetDir,
+    [String]$alternateDir='E:\Temporal',
     [String]$user='openorange',
     [String]$password='Uss9954orange8',
     [String]$hostip='192.168.1.219',
@@ -34,7 +34,7 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
 ##  nombres de archivo
 ##
 $logFileName=[string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
-$targetZip =[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
+$targetZip=[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-DB-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
@@ -68,10 +68,10 @@ ExecuteOrQuit -cmd $mysqldump -par $dumpEventLog -name 'dump eventlog'
 
 LogWrite -logstring 'dump eventLog OK'
 
+cd $targetDir
+
 LogWrite -logstring 'comprimiendo base...'
 ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $dbTempFile)) -name $targetFile 
-
-cd $targetDir
 
 LogWrite -logString 'comprimiendo attach...'
 ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $attachFile)) -name $attachFile 
