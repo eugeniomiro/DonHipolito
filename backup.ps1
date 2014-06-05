@@ -50,9 +50,9 @@ $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
 $dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
                             $user, $password, $hostip, $port, $dbname, $alternateDir, $targetFile)
 $dumpAttach=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} Attach', 
-                            $user, $password, $hostip, $port, $dbname, $targetDir, $attachFile)
+                            $user, $password, $hostip, $port, $dbname, $alternateDir, $attachFile)
 $dumpEventLog=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} EventLog', 
-                            $user, $password, $hostip, $port, $dbname, $targetDir, $eventLogFile)
+                            $user, $password, $hostip, $port, $dbname, $alternateDir, $eventLogFile)
 
 ##
 ##  Ejecución
@@ -81,13 +81,13 @@ ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targe
 
 LogWrite -logstring 'compresion completa...'
 
-cd $currentDir
-
 LogWrite -logstring $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
-Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose 4>&1 > $logFileName
+Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose 4>&1> $logFileName
 
 LogWrite -logstring 'borrando archivos *.sql'
-Remove-Item -Path $dbTempFile -Verbose 4>&1 > $logFileName
-Remove-Item -Path *.sql -Verbose 4>&1 > $logFileName 
+Remove-Item -Path $(Join-Path -Path $alternateDir -ChildPath *.sql) -Verbose 4>&1> $logFileName
+Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose 4>&1> $logFileName 
+
+cd $currentDir
 
 LogWrite -logstring 'Backup ejecutado correctamente...'
