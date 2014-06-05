@@ -1,4 +1,20 @@
-﻿Function LogWrite([string]$logstring)
+﻿param (
+    ##
+    ##  valores de configuracion
+    ##
+    [String]$dbname='marketing',
+    [String]$mysqlPath='C:\Archivos de programa\MySQL\MySQL Server 5.1',
+    [String]$targetDir='D:\OpenOrange\Marketing',
+    [String]$alternateDir=$targetDir,
+    [String]$user='openorange',
+    [String]$password='Uss9954orange8',
+    [String]$hostip='192.168.1.219',
+    [String]$port='3306',
+    [String]$compressor='C:\Program Files (x86)\7-Zip\7z.exe',
+    [Int32]$numDays=2
+)
+
+Function LogWrite([string]$logstring)
 {
     echo $logstring
     Add-content $logFileName -value $([string]::Format("{0}: {1}", $(Get-Date -format yyyy/MM/dd-HH:mm:ss), $logstring))
@@ -13,18 +29,6 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
     }
 }
 
-##
-##  valores de configuracion
-##
-$dbname='marketing'
-$mysqlPath='C:\Archivos de programa\MySQL\MySQL Server 5.1'
-$targetDir='D:\OpenOrange\Marketing'
-$user='openorange'
-$password='Uss9954orange8'
-$hostip='192.168.1.219'
-$port='3306'
-$compressor='C:\Program Files (x86)\7-Zip\7z.exe'
-$numDays=2
 
 ##
 ##  nombres de archivo
@@ -41,10 +45,10 @@ $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -form
 
 $currentDir=pwd
 $pastLimit=$(Get-Date).AddDays(-$numDays)
-
+$dbTempFile=$(Join-Path -path $alternateDir -childpath $targetFile)
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
 $dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
-                            $user, $password, $hostip, $port, $dbname, $targetDir, $targetFile)
+                            $user, $password, $hostip, $port, $dbname, $alternateDir, $targetFile)
 $dumpAttach=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} Attach', 
                             $user, $password, $hostip, $port, $dbname, $targetDir, $attachFile)
 $dumpEventLog=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} EventLog', 
@@ -65,10 +69,9 @@ ExecuteOrQuit -cmd $mysqldump -par $dumpEventLog -name 'dump eventlog'
 LogWrite -logstring 'dump eventLog OK'
 
 LogWrite -logstring 'comprimiendo base...'
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $dbTempFile)) -name $targetFile 
 
 cd $targetDir
-
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $targetFile)) -name $targetFile 
 
 LogWrite -logString 'comprimiendo attach...'
 ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $attachFile)) -name $attachFile 
@@ -81,9 +84,10 @@ LogWrite -logstring 'compresion completa...'
 cd $currentDir
 
 LogWrite -logstring $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
-Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose
+Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose 4>&1 > $logFileName
 
 LogWrite -logstring 'borrando archivos *.sql'
-Remove-Item -Path *.sql -Verbose
+Remove-Item -Path $dbTempFile -Verbose 4>&1 > $logFileName
+Remove-Item -Path *.sql -Verbose 4>&1 > $logFileName 
 
 LogWrite -logstring 'Backup ejecutado correctamente...'
