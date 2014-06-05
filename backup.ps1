@@ -46,6 +46,9 @@ $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -form
 $currentDir=pwd
 $pastLimit=$(Get-Date).AddDays(-$numDays)
 $dbTempFile=$(Join-Path -path $alternateDir -childpath $targetFile)
+$attachTempFile=$(Join-Path -path $alternateDir -childpath $attachFile)
+$eventLogTempFile=$(Join-Path -path $alternateDir -childpath $eventLogFile)
+
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
 $dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
                             $user, $password, $hostip, $port, $dbname, $alternateDir, $targetFile)
@@ -74,10 +77,10 @@ LogWrite -logstring 'comprimiendo base...'
 ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $dbTempFile)) -name $targetFile 
 
 LogWrite -logString 'comprimiendo attach...'
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $attachFile)) -name $attachFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $attachTempFile)) -name $attachFile 
 
 LogWrite -logString 'comprimiendo eventLog...'
-ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $eventLogFile)) -name $eventLogFile 
+ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targetZip, $eventLogTempFile)) -name $eventLogFile 
 
 LogWrite -logstring 'compresion completa...'
 
