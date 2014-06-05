@@ -85,11 +85,11 @@ ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targe
 LogWrite -logstring 'compresion completa...'
 
 LogWrite -logstring $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
-Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose 4>&1> $logFileName
+Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose 4>&1>> $logFileName
 
 LogWrite -logstring 'borrando archivos *.sql'
-Remove-Item -Path $(Join-Path -Path $alternateDir -ChildPath *.sql) -Verbose 4>&1> $logFileName
-Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose 4>&1> $logFileName 
+Remove-Item -Path $(Join-Path -Path $alternateDir -ChildPath *.sql) -Verbose 4>&1>> $logFileName
+Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose 4>&1>> $logFileName 
 
 cd $currentDir
 
