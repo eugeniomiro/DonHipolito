@@ -33,7 +33,7 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
 ##
 ##  nombres de archivo
 ##
-$logFileName=[string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
+$logFileName=$(Join-Path -Path $targetDir -ChildPath [string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm)))
 $targetZip=[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-DB-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
@@ -45,9 +45,9 @@ $eventLogFile=[string]::Format('{0}-EventLog-{1}.sql', $dbname, $(Get-Date -form
 
 $currentDir=pwd
 $pastLimit=$(Get-Date).AddDays(-$numDays)
-$dbTempFile=$(Join-Path -path $alternateDir -childpath $targetFile)
-$attachTempFile=$(Join-Path -path $alternateDir -childpath $attachFile)
-$eventLogTempFile=$(Join-Path -path $alternateDir -childpath $eventLogFile)
+$dbTempFile=$(Join-Path -Path $alternateDir -ChildPath $targetFile)
+$attachTempFile=$(Join-Path -Path $alternateDir -ChildPath $attachFile)
+$eventLogTempFile=$(Join-Path -Path $alternateDir -ChildPath $eventLogFile)
 
 $mysqldump=[string]::Format('"{0}\bin\mysqldump.exe"', $mysqlPath)
 $dumpDbCmd=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --verbose --complete-insert --allow-keywords --create-options -r"{5}\{6}" {4} --ignore-table="{4}.Attach" --ignore-table="{4}.EventLog" ', 
