@@ -33,7 +33,7 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
 ##
 ##  nombres de archivo
 ##
-$logFileName=$(Join-Path -Path $targetDir -ChildPath [string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm)))
+$logFileName=$(Join-Path -Path $targetDir -ChildPath $([string]::Format('{0}-{1}.log', $dbname, $(Get-Date -format yyyyMMdd-HHmm))))
 $targetZip=[string]::Format('{0}-{1}.zip', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $targetFile=[string]::Format('{0}-DB-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
 $attachFile=[string]::Format('{0}-Attach-{1}.sql', $dbname, $(Get-Date -format yyyyMMdd-HHmm))
