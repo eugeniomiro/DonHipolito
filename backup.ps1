@@ -58,7 +58,7 @@ $dumpEventLog=[string]::Format('-u{0} -p{1} -h{2} --port {3} -Q --hex-blob --ver
                             $user, $password, $hostip, $port, $dbname, $alternateDir, $eventLogFile)
 
 ##
-##  Ejecución
+##  Ejecucion
 ##
 LogWrite -logstring 'iniciando backup'
 ExecuteOrQuit -cmd $mysqldump -par $dumpDbCmd -name 'dump db'
@@ -85,11 +85,11 @@ ExecuteOrQuit -cmd $compressor -par $([string]::Format('a -tzip {0} {1}', $targe
 LogWrite -logstring 'compresion completa...'
 
 LogWrite -logstring $([string]::Format('borrando archivos en "{1}" creados hace mas de {0} dias', $numDays, $targetDir))
-Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose *>&1| Out-File -Append $logFileName -Encoding Ascii
+Get-ChildItem -Path $targetDir -Recurse -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose *>&1| Out-File -Append $logFileName -Encoding utf8
 
 LogWrite -logstring 'borrando archivos *.sql'
-Remove-Item -Path $(Join-Path -Path $alternateDir -ChildPath *.sql) -Verbose *>&1 | Out-File -Append $logFileName -Encoding Ascii
-Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose *>&1 | Out-File -Append $logFileName -Encoding Ascii
+Remove-Item -Path $(Join-Path -Path $alternateDir -ChildPath *.sql) -Verbose *>&1 | Out-File -Append $logFileName -Encoding utf8
+Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose *>&1 | Out-File -Append $logFileName -Encoding utf8
 
 cd $currentDir
 
