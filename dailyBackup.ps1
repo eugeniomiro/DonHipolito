@@ -54,7 +54,7 @@ exec -backupName "marketing" -backupDir "D:\OpenOrange\Marketing"
 #exec -backupName "ussgps" -backupDir "D:\OpenOrange\GPS"
 #exec -backupName "openuss" -backupDir "D:\OpenOrange\USS"
 
-# enviar logfilename por email
-sendMail -subject "Reporte de Backup OpenOrange" -body $($(Get-Content $logfilename) -join '`n') -from $from -to $toList 
+# enviar logfilename por emai
+sendMail -subject "Reporte de Backup OpenOrange" -body $($(Get-Content $logfilename) -join "`n") -from $from -to $toList 
 
 #remove-item $logfilename
