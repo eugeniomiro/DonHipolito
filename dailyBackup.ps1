@@ -40,15 +40,15 @@ function sendMail($subject, $body, $from, $toList, $replyTo)
 
 function exec([string]$backupName, [string]$backupDir) 
 {
-    Set-Content $logfilename -Value "Backup $backupName ejecutado..." -Encoding UTF8
+    Add-Content $logfilename -Value "Backup $backupName ejecutado..." -Encoding UTF8
     .\Backup_OpenOrange.ps1 -dbname $backupName -targetDir $backupDir 
     If ($LASTEXITCODE -ne 0) {
-        Add-Content  $logfilename -Value "con error " + $LASTEXITCODE
+        Add-Content  $logfilename -Value "con error $LASTEXITCODE"
     } else {
         Add-Computer $logfilename -Value "OK"
     }
 }
-
+Set-Content $logfilename -Value "Iniciando respaldo de base de datos..."
 exec -backupName "tecnologia" -backupDir "D:\OpenOrange\Tecnologia"
 exec -backupName "marketing" -backupDir "D:\OpenOrange\Marketing"
 #exec -backupName "ussgps" -backupDir "D:\OpenOrange\GPS"
