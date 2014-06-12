@@ -1,29 +1,33 @@
-﻿#function sendMail
-#{
-#     Write-Host "Sending Email"
-#
-#     #SMTP server name
-#     $smtpServer = "smtp.xxxx.com"
-#
-#     #Creating a Mail object
-#     $msg = new-object Net.Mail.MailMessage
-#
-#     #Creating SMTP server object
-#     $smtp = new-object Net.Mail.SmtpClient($smtpServer)
-#
-#     #Email structure 
-#     $msg.From = "fromID@xxxx.com"
-#     $msg.ReplyTo = "replyto@xxxx.com"
-#     $msg.To.Add("toID@xxxx.com")
-#     $msg.subject = "My Subject"
-#     $msg.body = "This is the email Body."
-#
-#     #Sending email 
-#     $smtp.Send($msg)
-#  
-#}
+﻿param(
+    [string]$smtpServer = "192.168.1.203",
+    [string]$logfilename = "Backup_OpenOrange_Full.log",
+    [string]$from = "USSSRV13@uss.com.ar",
+    [string]$toList = "soporte@uss.com.ar,alertas-it@uss.com.ar"
+)
 
-$logfilename = "Backup_OpenOrange_Full.log"
+function sendMail($subject, $body, $from, $toList, $replyTo)
+{
+    Write-Host "Sending Email"
+    #Creating a Mail object
+    $msg = new-object Net.Mail.MailMessage
+    
+    #Creating SMTP server object
+    $smtp = new-object Net.Mail.SmtpClient($smtpServer)
+    
+    #Email structure 
+    $msg.From = $from
+    $msg.subject = $subject
+    $msg.body = $body
+    if (![String]::IsNullOrEmpty($replyTo)) {
+        $msg.ReplyTo = $replyTo
+    }
+    $toList.Split(",") | foreach {
+        $msg.To.Add($_)
+    }
+    
+    #Sending email 
+    $smtp.Send($msg)
+}
 
 .\Backup_OpenOrange.ps1 -dbname tecnologia -targetDir D:\OpenOrange\Tecnologia *>&1 | Out-File -Append $logfilename
 .\Backup_OpenOrange.ps1 -dbname marketing  -targetDir D:\OpenOrange\Marketing *>&1 | Out-File -Append $logfilename
@@ -31,5 +35,7 @@ $logfilename = "Backup_OpenOrange_Full.log"
 #.\Backup_OpenOrange.ps1 -dbname openuss    -targetDir D:\OpenOrange\USS *>&1 | Out-File -Append $logfilename
 
 # enviar logfilename por email
+sendMail -subject "Reporte de Backup OpenOrange" -body $([String]::Join("\n", $(Get-Content $logfilename))) -from $from -to $toList 
+
 # remove-item $logfilename
 #
