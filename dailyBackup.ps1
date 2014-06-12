@@ -38,10 +38,21 @@ function sendMail($subject, $body, $from, $toList, $replyTo)
     }
 }
 
-.\Backup_OpenOrange.ps1 -dbname tecnologia -targetDir D:\OpenOrange\Tecnologia *>&1 | Out-File $logfilename
-.\Backup_OpenOrange.ps1 -dbname marketing  -targetDir D:\OpenOrange\Marketing *>&1 | Out-File -Append $logfilename
-#.\Backup_OpenOrange.ps1 -dbname ussgps     -targetDir D:\OpenOrange\GPS *>&1 | Out-File -Append $logfilename
-#.\Backup_OpenOrange.ps1 -dbname openuss    -targetDir D:\OpenOrange\USS *>&1 | Out-File -Append $logfilename
+function exec([string]$backupName, [string]$backupDir) 
+{
+    Set-Content $logfilename -Value "Backup $backupName ejecutado..." -Encoding UTF8
+    .\Backup_OpenOrange.ps1 -dbname $backupName -targetDir $backupDir 
+    If ($LASTEXITCODE -ne 0) {
+        Add-Content  $logfilename -Value "con error " + $LASTEXITCODE
+    } else {
+        Add-Computer $logfilename -Value "OK"
+    }
+}
+
+exec -backupName "tecnologia" -backupDir "D:\OpenOrange\Tecnologia"
+exec -backupName "marketing" -backupDir "D:\OpenOrange\Marketing"
+#exec -backupName "ussgps" -backupDir "D:\OpenOrange\GPS"
+#exec -backupName "openuss" -backupDir "D:\OpenOrange\USS"
 
 # enviar logfilename por email
 sendMail -subject "Reporte de Backup OpenOrange" -body $($(Get-Content $logfilename) -join '`n') -from $from -to $toList 
