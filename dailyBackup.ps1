@@ -23,12 +23,12 @@
 #  
 #}
 
-$logfilename = "backup.log"
+$logfilename = "Backup_OpenOrange_Full.log"
 
-backup1.ps1 -dbname tecnologia -targetDir D:\OpenOrange\Tecnologia *>&1 | Out-File -Append $logfilename
-backup1.ps1 -dbname marketing  -targetDir D:\OpenOrange\Marketing *>&1 | Out-File -Append $logfilename
-#backup1.ps1 -dbname ussgps     -targetDir D:\OpenOrange\GPS *>&1 | Out-File -Append $logfilename
-#backup1.ps1 -dbname openuss    -targetDir D:\OpenOrange\USS *>&1 | Out-File -Append $logfilename
+.\Backup_OpenOrange.ps1 -dbname tecnologia -targetDir D:\OpenOrange\Tecnologia *>&1 | Out-File -Append $logfilename
+.\Backup_OpenOrange.ps1 -dbname marketing  -targetDir D:\OpenOrange\Marketing *>&1 | Out-File -Append $logfilename
+#.\Backup_OpenOrange.ps1 -dbname ussgps     -targetDir D:\OpenOrange\GPS *>&1 | Out-File -Append $logfilename
+#.\Backup_OpenOrange.ps1 -dbname openuss    -targetDir D:\OpenOrange\USS *>&1 | Out-File -Append $logfilename
 
 # enviar logfilename por email
 # remove-item $logfilename
