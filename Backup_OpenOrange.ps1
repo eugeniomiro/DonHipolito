@@ -25,7 +25,7 @@ function ExecuteOrQuit([string]$cmd, [string[]]$par, [string]$name) {
     if ($status.ExitCode -gt 0) {
         LogWrite -logstring $([string]::Format('errorcode {0} ejecutando ''{1}'' cmd (''{2}'' {3}) ', 
                                         $status.ExitCode, $name, $cmd, [String]::Join(' ', $par)))
-        exit
+        exit 1
     }
 }
 
@@ -94,3 +94,5 @@ Remove-Item -Path $(Join-Path -Path $targetDir -ChildPath *.sql) -Verbose *>&1 |
 cd $currentDir
 
 LogWrite -logstring 'Backup ejecutado correctamente...'
+
+exit 0
