@@ -33,7 +33,7 @@ function sendMail($subject, $body, $from, $toList, $replyTo)
         #Sending email 
         $smtp.Send($msg)
     } catch [System.Exception] {
-        Write-Error "Error mientras se enviaba el email: $error"
+        Add-Content  $logfilename -Value "Error mientras se enviaba el email: $error"
         exit
     }
 }
