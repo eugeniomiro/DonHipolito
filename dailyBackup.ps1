@@ -1,8 +1,9 @@
 ﻿param (
     [string]$smtpServer = "192.168.1.203",
-    [string]$logfilename = "Backup_OpenOrange_Full.log",
+    [string]$logfilename = "Backup_OpenOrange_Full_$(Get-Date -format yyyyMMdd-HHmm).log",
     [string]$from = "USSSRV13@uss.com.ar",
-    [string]$toList = "soporte@uss.com.ar,alertas-it@uss.com.ar"
+    [string]$toList = "soporte@uss.com.ar,alertas-it@uss.com.ar",
+    [Int32]$numDays = 8
 )
 
 function sendMail($subject, $body, $from, $toList, $replyTo)
@@ -48,13 +49,16 @@ function exec([string]$backupName, [string]$backupDir)
         Add-Content $logfilename -Value "OK"
     }
 }
+
+$pastLimit=$(Get-Date).AddDays(-$numDays)
+
 Set-Content $logfilename -Value "Iniciando respaldo de base de datos..."
 exec -backupName "tecnologia" -backupDir "D:\OpenOrange\Tecnologia"
 exec -backupName "marketing" -backupDir "D:\OpenOrange\Marketing"
 #exec -backupName "ussgps" -backupDir "D:\OpenOrange\GPS"
 #exec -backupName "openuss" -backupDir "D:\OpenOrange\USS"
 
+Get-ChildItem -Path *.log -Force | Where-Object { !$_.PSIsContainer -and $_.CreationTime -lt $pastLimit } | Remove-Item -Force -Verbose *>&1| Out-File -Append $logFileName -Encoding utf8
+
 # enviar logfilename por emai
 sendMail -subject "Reporte de Backup OpenOrange" -body $($(Get-Content $logfilename) -join "`n") -from $from -to $toList 
-
-#remove-item $logfilename
