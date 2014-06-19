@@ -45,7 +45,7 @@ function exec([string]$backupName, [string]$backupDir)
     If ($LASTEXITCODE -ne 0) {
         Add-Content  $logfilename -Value "con error $LASTEXITCODE"
     } else {
-        Add-Computer $logfilename -Value "OK"
+        Add-Content $logfilename -Value "OK"
     }
 }
 Set-Content $logfilename -Value "Iniciando respaldo de base de datos..."
